@@ -1,1 +1,4 @@
 .idea
+.terraform
+argocd/argocd-conf/*.yaml
+terraform.tfstate*

@@ -1,0 +1,23 @@
+# ArgoCD Helm Chart Values
+global:
+  image:
+    tag: "latest"
+server:
+  extraArgs:
+  - --insecure
+  - --rootpath=/argocd
+  - --basehref=/argocd
+%{ if argocd_applications != [] }
+configs:
+  secret:
+    # bcrypt hash of the password
+    # Generate with: htpasswd -nbBC 10 "" your-password | tr -d ':\n' | sed 's/$2y/$2a/'
+    # Or use: echo -n "your-password" | docker run --rm -i httpd:alpine htpasswd -nbBC 10 "" | cut -d: -f2
+    argocdServerAdminPassword: "${htpasswd_argocd_password}"
+  repositories:
+    %{ for idx, app in argocd_applications }
+    github-repo-${idx}:
+      type: git
+      url: ${app.repo_url}
+    %{ endfor }
+%{ endif }
